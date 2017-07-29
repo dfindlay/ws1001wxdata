@@ -124,7 +124,7 @@ my $alrmcnt = 0;
 
 # auto-flush on socket
 $| = 1;
- 
+
 # Create the TCP socket
 my $tcpsocket = new IO::Socket::INET (
     LocalHost => $hostaddr,
@@ -171,14 +171,18 @@ if(! defined $client_socket) {
     }
     goto UDPSEND;       # Send another UDP broadcast message
 }
- 
+
 # get information about a newly connected client
 my $client_address = $client_socket->peerhost();
 my $client_port = $client_socket->peerport();
 print "connection from $client_address:$client_port\n";
 
 while(1) {	# TCP socket send/receive loop
- 
+
+    # clear out the file to stop Cumulus incrementing the "Last station update"
+    # time in the event of any failures
+    truncate($ewcumulusfile,0);
+
     # send message to the connected client (console)
     my $rcvmsg = "";
 
@@ -215,7 +219,7 @@ while(1) {	# TCP socket send/receive loop
 	if($client_msg_size) {
     	    print "Received data message ($client_msg_size bytes)\n";
 	    print "Unexpected console message of size = $msglen \n";
-	    
+
 	    if($msglen > 2) {
 	    	print "HP_HEAD = $msgcontent[0] \n";
 	    	print "HP_CMD = $msgcontent[1] \n";
@@ -260,7 +264,7 @@ while(1) {	# TCP socket send/receive loop
     if(($month == 1) && ($day == 1) && ($hour == 0) && ( $min <= 2)) {
 	$msgcontent[22] = 0.;		# console rain total
     }
-    
+
     $strhour = sprintf ("%02d", $hour);
     $strmin = sprintf ("%02d", $min);
     $strsec = sprintf ("%02d", $sec);
@@ -268,7 +272,7 @@ while(1) {	# TCP socket send/receive loop
     # convert date to yyyy-mm-dd format
     $ewdata[3] = "${year}-${month}-${day}";     	# date
     $ewdata[4] = "${strhour}:${strmin}:${strsec}";	# time
- 
+
     # indoor humidity
     if($msgcontent[8] =~ /\d/) {
         $ewdata[6] = sprintf("%.0f", $msgcontent[8]);
@@ -347,7 +351,7 @@ while(1) {	# TCP socket send/receive loop
 
     sleep($wxupdate);
 }
- 
+
 $tcpsocket->close();
 
 exit(0);
