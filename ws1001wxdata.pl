@@ -56,7 +56,7 @@ if($opt_m) { 	# console displays data in metric units
     $frztemp = 0.;
     $tfactor = 1.;
     $pfactor = 1.;
-    $wfactor = 1.;
+    $wfactor = 5./18.;  # Convert km/h to m/s
     $rfactor = 1.;
 }
 else {		# console displays data in US units
