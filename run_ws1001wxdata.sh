@@ -7,10 +7,9 @@ then
 	exit 0
 fi
 
-bin_dir=C:/cygwin64/bin
-data_dir=YOUR_EasyWeather_DATA_DIR
-logs_dir=YOUR_EasyWeather_LOG_DIR
-wx_bin_dir=YOUR_WX_BIN_DIR
+data_dir="$(dirname "$0")"
+logs_dir="/tmp"
+wx_bin_dir="$(dirname "$0")"
 
 if [ ! -d $data_dir ]
 then
@@ -18,8 +17,8 @@ then
 	exit 0
 fi
 
-log=$logs_dir/ws1001wxdata-`${bin_dir}/date +%F`.log
+log=$logs_dir/ws1001wxdata-`date +%F`.log
 
 echo Starting ws1001wxdata.pl
 
-$wx_bin_dir/ws1001wxdata.pl $data_dir/msg-udp-srch.dat $data_dir/msg-tcp-nowrec-req.dat $data_dir/ewpdata.dat >> $log 2>&1
+$wx_bin_dir/ws1001wxdata.pl -m -i 192.168.178.45 $data_dir/msg-udp-srch.dat $data_dir/msg-tcp-nowrec-req.dat $data_dir/ewpdata.dat >> $log 2>&1
